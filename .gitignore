@@ -3,3 +3,5 @@ template/
 *__pycache__*
 */logs*
 *.log*
+*alembic.ini
+*pg_data*
