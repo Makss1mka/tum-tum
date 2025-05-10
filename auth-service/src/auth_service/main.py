@@ -1,11 +1,13 @@
-from log.setup import setup_logging
+from config.global_exception_handlers import code_exception_handler, pydantic_validation_exception_handler
+from routers.user_creds_router import user_creds_router
+from fastapi.exceptions import RequestValidationError
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
-from globals import PORT, HOST
+from log.setup import setup_logging
 from log.loggers import APP_LOGGER
-import uvicorn
+from globals import PORT, HOST
+from fastapi import FastAPI
 import exceptions
-from config.global_exception_handlers import code_exception_handler
+import uvicorn
 
 @asynccontextmanager
 async def app_startup(app: FastAPI):
@@ -18,8 +20,9 @@ async def app_startup(app: FastAPI):
 app = FastAPI(lifespan=app_startup)
 
 app.add_exception_handler(exceptions.CodeException, code_exception_handler)
+#app.add_exception_handler(RequestValidationError, pydantic_validation_exception_handler)
 
-# app.include_router(router=Router, prefix="/api/v1")
+app.include_router(router=user_creds_router, prefix='/api/v1')
 
 if __name__ == "__main__":
     uvicorn.run(app, host=HOST, port=PORT, log_config=None)
