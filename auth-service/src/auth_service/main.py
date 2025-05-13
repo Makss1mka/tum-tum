@@ -22,7 +22,7 @@ app = FastAPI(lifespan=app_startup)
 app.add_exception_handler(exceptions.CodeException, code_exception_handler)
 #app.add_exception_handler(RequestValidationError, pydantic_validation_exception_handler)
 
-app.include_router(router=user_creds_router, prefix='/api/v1')
+app.include_router(router=user_creds_router) # , prefix='/api/v1'
 
 if __name__ == "__main__":
     uvicorn.run(app, host=HOST, port=PORT, log_config=None)

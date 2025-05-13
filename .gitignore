@@ -1,7 +1,7 @@
 template/
 *.env*
 *__pycache__*
-*/logs*
+*/logs/*
 *.log*
 *alembic.ini
 *pg_data*

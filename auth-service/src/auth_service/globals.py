@@ -9,7 +9,7 @@ load_dotenv()
 # SERVER VARS
 #
 PORT = 8081
-HOST = "auth-service"#"localhost"
+HOST = "auth-service"
 
 
 #
