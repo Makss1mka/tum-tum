@@ -4,7 +4,6 @@ services:
     container_name: redis_server
     ports:
       - "6379:6379"
-    restart: always
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -24,7 +23,6 @@ services:
       - "5431:5432"
     volumes:
       - ./pg_data:/var/lib/postgresql/data
-    restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -54,21 +52,23 @@ services:
       JWT_ACCESS_EXPIRATION_TIME_MINUTES: ${JWT_ACCESS_EXPIRATION_TIME_MINUTES} 
     ports:
       - "8081:8081"
-    #restart: always
     networks:
       - backend
 
-  # gateway:
-  #   build:
-  #     context: ./gateway
-  #   container_name: gateway
-  #   depends_on:
-  #     - redis
-  #   ports:
-  #     - "8083:8083"
-  #   restart: always
-  #   networks:
-  #     - backend
+  gateway:
+    build:
+      context: ./gateway
+    container_name: gateway
+    depends_on:
+      - redis
+    ports:
+      - "8083:8083"
+    environment:
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+    networks:
+      - backend
 
 #volumes:
 
