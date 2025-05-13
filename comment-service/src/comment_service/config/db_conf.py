@@ -1,22 +1,25 @@
+from globals import DB_USERNAME, DB_HOST, DB_NAME, DB_PASSWORD, DB_URL
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
-from dotenv import load_dotenv
 from models import entities
-import os
-
-load_dotenv()
-
-username = os.environ.get("DB_USERNAME")
-password = os.environ.get("DB_PASSWORD")
-bd_name = os.environ.get("DB_NAME")
-host = os.environ.get("DB_HOST")
-url = os.environ.get("DB_URL")
 
 engine = None
 AsyncSessionMaker = None
 
-if (url != None and username != None and password != None and bd_name != None and host != None):
-    engine = create_async_engine(url.format(username=username, password=password, host=host, bd_name=bd_name))
+if (DB_URL != None 
+    and DB_USERNAME != None 
+    and DB_PASSWORD != None 
+    and DB_NAME != None 
+    and DB_HOST != None
+):
+    engine = create_async_engine(
+        DB_URL.format(
+            username=DB_USERNAME,
+            password=DB_PASSWORD,
+            host=DB_HOST,
+            bd_name=DB_NAME
+        )
+    )
     AsyncSessionMaker = sessionmaker(engine, class_=AsyncSession)
 
 
