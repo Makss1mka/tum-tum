@@ -67,4 +67,8 @@ class BadGatewayException(CodeException):
     def __init__(self, message: str = "Ошибка шлюза"):
         super().__init__(message=message, status_code=502)
 
+class GatewayTimeoutException(CodeException):
+    def __init__(self, message: str = "Gateway Timeout"):
+        super().__init__(message=message, status_code=504)
+
 
