@@ -25,6 +25,13 @@ video_tags_association_table = Table(
     Column("tag_id", ForeignKey("video_tags.id"), primary_key=True)
 )
 
+user_subs_association_table = Table(
+    "user_subs_association_table",
+    Base.metadata,
+    Column("author_id", ForeignKey("users_data.id"), primary_key=True),
+    Column("sub_id", ForeignKey("users_data.id"), primary_key=True)
+)
+
 
 
 #
@@ -47,7 +54,21 @@ class UserData(Base):
     id = Column(UUID, primary_key=True, nullable=False)
     name = Column(String, nullable=False)
     profile_picture = Column(String, nullable=False)
+    subscribers_count = Column(Integer, nullable=False, default=0)
+    subscribtions_count = Column(Integer, nullable=False, default=0)
 
+    subscribers = relationship(
+        "User",
+        secondary=user_subs_association_table,
+        back_populates="subscribtions",
+        lazy="select"                            
+    )
+    subscribtions = relationship(
+        "User",
+        secondary=user_subs_association_table,
+        back_populates="subscribers",
+        lazy="select"                            
+    )
     videos = relationship("Video", back_populates="author", lazy="select")
     liked_videos = relationship(
         "Video",
