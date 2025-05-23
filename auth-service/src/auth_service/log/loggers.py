@@ -6,6 +6,7 @@ TEST_LOGGER: logging.Logger = logging.getLogger("TEST")
 
 SESSION_SERVICE_LOGGER: logging.Logger = logging.getLogger("SESSION SERVICE")
 USER_CREDS_SERVICE_LOGGER: logging.Logger = logging.getLogger("USER CREDS SERVICE")
-JWT_SERVICE_LOGGER: logging.Logger = logging.getLogger("JWT SERVICE LOGGER")
+JWT_SERVICE_LOGGER: logging.Logger = logging.getLogger("JWT SERVICE")
 
-USER_CREDS_SERVICE_ROUTER: logging.Logger = logging.getLogger("USER CREDS ROUTER")
+USER_CREDS_SERVICE_ROUTER_LOGGER: logging.Logger = logging.getLogger("USER CREDS ROUTER")
+KAFKA_SERVICE_LOGGER: logging.Logger = logging.getLogger("KAFKA SERVICE")
