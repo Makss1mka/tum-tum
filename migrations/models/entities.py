@@ -105,7 +105,10 @@ class VideoTags(Base):
 class Video(Base):
     __tablename__ = "videos"
     id = Column(UUID, primary_key=True, nullable=False)
-    name = Column(String, nullable=False)
+    title = Column(String, nullable=False)
+    description = Column(String, nullable=False)
+    file_video_path = Column(String, nullable=False)
+    created_at = Column(Date, nullable=False, default=datetime.datetime.now())
     author_id = Column(UUID, ForeignKey("users_data.id"), nullable=False)
 
     author = relationship("UserData", back_populates="videos", lazy="select")
