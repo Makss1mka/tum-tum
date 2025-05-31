@@ -110,7 +110,9 @@ class Video(Base):
     file_video_path = Column(String, nullable=False)
     created_at = Column(Date, nullable=False, default=datetime.datetime.now())
     author_id = Column(UUID, ForeignKey("users_data.id"), nullable=False)
+    status_id = Column(Integer, ForeignKey("video_statuses.id"), nullable=False, default=1)
 
+    status = relationship("VideoStatus", back_populates="videos", lazy="select")
     author = relationship("UserData", back_populates="videos", lazy="select")
     liked_users = relationship(
         "UserData",
@@ -125,5 +127,11 @@ class Video(Base):
         lazy="select"
     )
 
+class VideoStatus(Base):
+    __tablename__ = "video_statuses"
+    id = Column(Integer, primary_key=True, nullable=False)
+    status = Column(String, nullable=False)
+
+    videos = relationship("Video", back_populates="status", lazy="select")
 
 
