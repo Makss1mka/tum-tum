@@ -1,6 +1,7 @@
 from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy import Column, Integer, String, ARRAY, Float, ForeignKey, Date, UUID, Table
+from sqlalchemy import Column, Integer, String, ForeignKey, Date, UUID, Table
 from sqlalchemy.orm import relationship
+import datetime
 
 class Base(DeclarativeBase):
     pass
@@ -21,7 +22,7 @@ __video_tags_association_table = Table(
 )
 
 
-class VideoTags(Base):
+class VideoTag(Base):
     __tablename__ = "video_tags"
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     tag_name = Column(String, nullable=False)
@@ -32,6 +33,14 @@ class VideoTags(Base):
         back_populates="tags",
         lazy="select"
     )
+
+
+class VideoStatus(Base):
+    __tablename__ = "video_statuses"
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    status_name = Column(String, nullable=False)
+
+    videos = relationship("Video", back_populates="status", lazy="select")
 
 
 class UserData(Base):
@@ -52,18 +61,23 @@ class UserData(Base):
 class Video(Base):
     __tablename__ = "videos"
     id = Column(UUID, primary_key=True, nullable=False)
-    name = Column(String, nullable=False)
+    title = Column(String, nullable=False)
+    description = Column(String, nullable=False)
+    file_video_path = Column(String, nullable=False)
+    created_at = Column(Date, nullable=False, default=datetime.datetime.now())
     author_id = Column(UUID, ForeignKey("users_data.id"), nullable=False)
+    status_id = Column(Integer, ForeignKey("video_statuses.id"), nullable=False, default=1)
 
+    status = relationship("VideoStatus", back_populates="videos", lazy="select")
     author = relationship("UserData", back_populates="videos", lazy="select")
     liked_users = relationship(
         "UserData",
         secondary=__video_like_association_table,
-        back_populates="liked_videos" ,
+        back_populates="liked_videos",
         lazy="select"   
     )
     tags = relationship(
-        "VideoTags",
+        "VideoTag",
         secondary=__video_tags_association_table,
         back_populates="videos",
         lazy="select"

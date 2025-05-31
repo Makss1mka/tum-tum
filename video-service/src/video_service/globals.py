@@ -40,3 +40,4 @@ REDIS_PORT = int(os.environ.get("REDIS_PORT"))
 # OTHER
 # 
 JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY")
+
