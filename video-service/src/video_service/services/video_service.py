@@ -1,4 +1,6 @@
-from exceptions import NotFoundException, BadRequestException, ConflictException, NoContentException
+"""Video Service Module"""
+
+from exceptions import NotFoundException, BadRequestException, ConflictException, NoContentException, InternalServerErrorException
 from models.dtos import VideoTagCreateDto, VideoTagResponseDto, \
     VideoCreateDto, VideoUpdateDto, VideoResponseDto
 from models.entities import VideoTag, Video, UserData, VideoStatus
@@ -109,9 +111,13 @@ async def get_video_by_id(video_id: str) -> VideoResponseDto:
                 
                 return VideoResponseDto.from_entity(video)
             
-            except Exception as e:
-                VIDEO_SERVICE_LOGGER.exception(f"Error retrieving video by ID {video_id}: {e}")
+            except NotFoundException as e:
+                VIDEO_SERVICE_LOGGER.warning(f"Video with ID {video_id} not found: {e}")
                 raise NotFoundException(f"Video with ID {video_id} not found") from e
+
+            except Exception as e:
+                VIDEO_SERVICE_LOGGER.exception(f"Error retrieving video {video_id}: {e}")
+                raise InternalServerErrorException("Unexpected exception") from e
 
 
 @log_entrance_debug(VIDEO_SERVICE_LOGGER)
@@ -189,8 +195,7 @@ async def update_video(video_id: str, video_dto: VideoUpdateDto) -> VideoRespons
 
                     video.tags.extend(not_found_tags)
                 
-                if not is_smth_changed:
-                    session.add(video)
+                if is_smth_changed:
                     return VideoResponseDto.from_entity(video)
                 else:
                     raise NoContentException("No changes were made to the video")
@@ -200,12 +205,20 @@ async def update_video(video_id: str, video_dto: VideoUpdateDto) -> VideoRespons
                 raise ConflictException("Video update violates unique constraints") from e
             
             except NoContentException as e:
-                VIDEO_SERVICE_LOGGER.warning(f"No changes made for video {video_id}: {e}")
+                VIDEO_SERVICE_LOGGER.warning(f"{e.message}: {e}")
                 raise NoContentException(e.message) from e
 
+            except NotFoundException as e:
+                VIDEO_SERVICE_LOGGER.warning(f"{e.message}: {e}")
+                raise NotFoundException(e.message) from e
+
+            except (ValueError, TypeError) as e:
+                VIDEO_SERVICE_LOGGER.exception(f"Value or Type error updating video {video_id}: {e}")
+                raise BadRequestException("Invalid data provided for video update") from e
+
             except Exception as e:
-                VIDEO_SERVICE_LOGGER.exception(f"Error updating video {video_id}: {e}")
-                raise BadRequestException("Failed to update video") from e
+                VIDEO_SERVICE_LOGGER.exception(f"Unexpected error updating video {video_id}: {e}")
+                raise InternalServerErrorException("Failed to update video") from e
             
 
 @log_entrance_debug(VIDEO_SERVICE_LOGGER)
@@ -236,9 +249,17 @@ async def delete_video(video_id: str) -> None:
                 await session.delete(video)
                 await session.commit()
             
+            except NotFoundException as e:
+                VIDEO_SERVICE_LOGGER.warning(f"{e.message}: {e}")
+                raise NotFoundException(e.message) from e
+
+            except (ValueError, TypeError) as e:
+                VIDEO_SERVICE_LOGGER.exception(f"Value or Type error deleting video {video_id}: {e}")
+                raise BadRequestException("Invalid data provided for video deletion") from e
+
             except Exception as e:
-                VIDEO_SERVICE_LOGGER.exception(f"Error deleting video {video_id}: {e}")
-                raise BadRequestException("Failed to delete video") from e
+                VIDEO_SERVICE_LOGGER.exception(f"Unexpected error deleting video {video_id}: {e}")
+                raise InternalServerErrorException("Failed to delete video") from e
 
 
 

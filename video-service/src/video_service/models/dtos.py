@@ -107,8 +107,8 @@ class VideoUpdateDto(BaseModel):
         new_tags (list[int]): List of tag IDs to associate with the video.
     """
 
-    new_title: str = Field(None, max_length=150)
-    new_description: str = Field(None, max_length=500, min_length=1)
+    new_title: str | None = Field(None, max_length=150)
+    new_description: str | None = Field(None, max_length=500, min_length=1)
     new_tags: list[int] = Field(default_factory=list)
 
 
